@@ -1,0 +1,95 @@
+services:
+  mariadb:
+    image: mariadb
+    container_name: mariadbIOT
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - TZ=America/Argentina/Buenos_Aires
+    volumes:
+      - ./mariadb:/config
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadminIOT
+    restart: always
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_ABSOLUTE_URI=https://${DOMINIO}:${PUERTO}/phpmyadmin/
+    ports:
+      - 8080:80
+    depends_on:
+      - mariadb
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquittoIOT
+    user: "1000:1000"
+    ports:
+      - 1883:1883
+      - ${PUERTO_MQTTS}:8883
+    restart: unless-stopped
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/config:/mosquitto/config
+      - ./swag/etc/letsencrypt:/var/tmp
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+
+  swag:
+    image: lscr.io/linuxserver/swag:latest
+    container_name: swagIOT
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Argentina/Buenos_Aires
+      - URL=${DOMINIO}
+      - VALIDATION=dns
+      - DNSPLUGIN=duckdns
+      - SUBDOMAINS=
+    volumes:
+      - ./swag:/config
+    ports:
+      - ${PUERTO}:443/tcp
+      - 80:80
+    restart: unless-stopped
+
+  flask:
+    image: flask
+    container_name: flask
+    build:
+      context: ./flask
+    environment:
+      - MYSQL_USER=${APP_USER}
+      - MYSQL_PASSWORD=${APP_PASS}
+      - MYSQL_DB=${APP_DB}
+      - MYSQL_HOST=${MARIADB_SERVER}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+
+  node-red:
+    image: nodered/node-red:latest
+    container_name: node-redIOT
+    ports:
+      - 1880:1880
+    environment:
+      - MQTT_USR=${MQTT_USR}
+      - MQTT_PASS=${MQTT_PASS}
+      - PUERTO_MQTTS=${PUERTO_MQTTS}
+      - SERVIDOR=${SERVIDOR}
+      # - TZ=America/Argentina/Buenos_Aires
+      - TELEGRAM_CHATID=${TELEGRAM_CHATID}
+      - TB_TOKEN=${TB_TOKEN}
+    volumes:
+      - ./node-red:/data
+    restart: unless-stopped
+

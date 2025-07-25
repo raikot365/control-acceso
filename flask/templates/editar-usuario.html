@@ -1,0 +1,27 @@
+{% extends "layout.html" %} {% block body %}
+
+<div class="container mt-4 mb-5">
+  <div class="card shadow-sm">
+      <div class="card-header">
+          <h4 class="mb-0">Editar Usuario</h4>
+      </div>
+      <form method="post" action="{{ url_for('editar_usuario', id=usuario.0) }}">
+          <div class="card-body">
+              <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="nombre" name="nombre" value="{{ usuario.1 }}" required>
+              </div>
+
+              <div class="mb-3">
+                  <label for="rol" class="form-label">Rol</label>
+                  <input type="text" class="form-control" id="rol" name="rol" value="{{usuario.2}}" required>                    
+              </div>
+          </div>
+          <div class="card-footer text-end">
+              <button type="submit" class="btn btn-primary">Actualizar</button>
+          </div>
+      </form>
+  </div>
+</div>
+
+{% endblock %}

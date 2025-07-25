@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% block title %}Vincular Tarjeta{% endblock %}
+{% block body %}
+
+<div class="container py-4">
+    <form method="post" action="{{ url_for('vincular_tarjeta', id=tarjeta.1) }}">
+        <div class="row mb-4 g-4 align-items-end">
+            <div class="col-md">
+                <label for="tarjeta"  class="form-label">Tarjeta</label>
+                <div class="badge bg-secondary d-flex"><p class="p-1 m-1 fs-6" id="tarjeta">{{ tarjeta.0 }}</p></div>
+            </div>
+            <div class="col-md">
+                <label for="chooseUser" class="form-label" style="margin-left: 5px;">Usuario</label>
+                <select id="chooseUser" name="user_id" class="form-select shadow-sm">
+                    <option value="">Elegir Usuario</option>
+                    {% for usuario in usuarios %}
+                        <option value="{{ usuario.0 }}">{{ usuario.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md">
+                <button type="submit" class="btn btn-outline-primary w-100">Vincular</button>
+            </div>
+        </div>
+    </form>
+   
+</div>
+
+
+
+
+{% endblock %}

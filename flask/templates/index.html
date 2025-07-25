@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% block title %}Control de Acceso{% endblock %}
+{% block body %}
+
+<div class="container-header mt-3 mb-3 d-flex align-items-start justify-content-between gap-3 flex-wrap">
+    <h1 class="m-0">Control de Acceso</h1>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('registrar_usuario') }}" class="btn btn-outline-dark btn-sm">Registrar Usuario</a>
+        <a href="{{ url_for('registrar_tarjeta') }}" class="btn btn-outline-dark btn-sm">Registrar Tarjeta</a>
+        <a href="{{ url_for('historial_acceso') }}" class="btn btn-outline-dark btn-sm">Historial Accesos</a>
+    </div>
+</div>
+
+
+<div class="container-usuarios mt-3 mb-3">   
+    <h3 class="mt-2 mb-2">Usuarios</h3>
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Tarjeta</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr class="table-active">
+                <td scope="row">{{ usuario.1 }}</td>
+                <td>{{ usuario.2 }}</td>
+                <td colspan="2"></td>
+                <td class="text-end">
+                    <a href="{{ url_for('editar_usuario', id=usuario.0) }}" class="btn btn-outline-primary btn-sm">Editar</a>
+                    <a href="{{ url_for('eliminar_usuario', id=usuario.0) }}" class="btn btn-outline-danger btn-sm">Eliminar</a>
+                </td>
+            </tr class="table-secondary">
+                {% for tarjeta in tarjetas %}
+                    {% if tarjeta.7 == usuario.0 %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td scope="row">{{ tarjeta.0 }}</td>
+                        <td>
+                            <form method="post" action="{{url_for('habilitar_tarjeta', id=tarjeta.1, state=tarjeta.3)}}">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="{% if tarjeta.3 == 1 %}flexSwitchCheckChecked{% else %}flexSwitchCheckDefault{% endif %}" {% if tarjeta.3 == 1 %}checked=""{% else %}{% endif %} onclick="this.form.submit()">
+                                    <label class="form-check-label" for="{% if tarjeta.3 == 1 %}flexSwitchCheckChecked{% else %}flexSwitchCheckDefault{% endif %}">{% if tarjeta.3 == 1 %}Habilitada{% else %}Deshabilitada{% endif %}</label>
+                                </div>                              
+                            </form>
+                        </td>
+                        <td><a href="{{ url_for('desvincular_tarjeta', id=tarjeta.1) }}" class="btn btn-outline-info btn-sm">Desvincular</a>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<div class="container-tarjetas mt-3 mb-3">
+    <h3 class="mt-2 mb-2">Tarjetas</h3>
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Tarjeta</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tarjeta in tarjetas %}
+            {% if tarjeta.7 == None %}
+            <tr class="table-active">
+                <td scope="row">{{ tarjeta.0 }}</td>
+                <td>
+                    <form method="post" action="{{url_for('habilitar_tarjeta', id=tarjeta.1, state=tarjeta.3)}}">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="{% if tarjeta.3 == 1 %}flexSwitchCheckChecked{% else %}flexSwitchCheckDefault{% endif %}" {% if tarjeta.3 == 1 %}checked=""{% else %}{% endif %} onclick="this.form.submit()">
+                            <label class="form-check-label" for="{% if tarjeta.3 == 1 %}flexSwitchCheckChecked{% else %}flexSwitchCheckDefault{% endif %}">{% if tarjeta.3 == 1 %}Habilitada{% else %}Deshabilitada{% endif %}</label>
+                        </div>                              
+                    </form>
+                </td>
+                <td><a href="{{ url_for('vincular_tarjeta_index', id=tarjeta.1) }}" class="btn btn-outline-dark btn-sm">Vincular</a>
+                    <a href="{{ url_for('editar_tarjeta', id=tarjeta.1) }}" class="btn btn-outline-primary btn-sm">Editar</a>
+                    <a href="{{ url_for('eliminar_tarjeta', id=tarjeta.1) }}" class="btn btn-outline-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+
+    </table>    
+</div>
+
+{% endblock %}
+

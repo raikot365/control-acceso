@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}Accesos{% endblock %}
+{% block body %}
+
+<div class="container mt-4 mb-5">
+    <h4 class="mb-3">Historial de Accesos</h4>
+    
+    <div class="table-responsive">
+        <table class="table table-hover align-middle text-nowrap table-bordered">
+            <thead class="table-active">
+                <tr>
+                    <th style="min-width: 160px;">Nombre</th>
+                    <th style="min-width: 200px;">Fecha</th>
+                    <th style="min-width: 160px;">Código de Tarjeta</th>
+                    <th style="min-width: 160px;">Código de Puerta</th>
+                    <th style="min-width: 120px;">Resultado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in registros %}
+                    <tr class="{% if registro.5 == 'aceptado' %}table-secondary{% else %}table-default{% endif %}">
+                        <td><strong>{{ registro.3 }}</strong></td>
+                        <td>{{ registro.4.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>{{ registro.1 }}</td>
+                        <td>{{ registro.2 }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if registro.5 == 'aceptado' %}
+                                    bg-success
+                                {% else %}
+                                    bg-danger
+                                {% endif %}
+                                rounded-pill">
+                                {{ registro.5|capitalize }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
